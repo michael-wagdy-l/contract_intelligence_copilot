@@ -19,14 +19,14 @@ def build_workflow(vectorstore, clause_extractor, compliance_checker):
         result = clause_extractor.invoke({"contract_text": state["contract_text"]})
         return {"extracted_clauses": result.content}
 
-    # Node 2: RAG retrieval from Chroma
+ 
     def retrieve_policies(state):
         retriever = vectorstore.as_retriever(search_kwargs={"k": 5})
         docs = retriever.invoke(state["contract_text"])
         context = "\n\n".join([d.page_content for d in docs])
         return {"rag_context": context}
 
-    # Node 3: Compliance check (Gemini)
+   
     def check_compliance(state):
         result = compliance_checker.invoke({
             "extracted_clauses": state["extracted_clauses"],
@@ -34,10 +34,10 @@ def build_workflow(vectorstore, clause_extractor, compliance_checker):
         })
         return {"compliance_findings": result.content}
 
-    # Node 4: Calculate risk score
+ 
     def score_risk(state):
         findings = state["compliance_findings"]
-        # Simple scoring: HIGH=30, MEDIUM=15, LOW=5
+    
         score = calculate_score(findings)
         report = build_report(state, score)
         return {"risk_score": score, "final_report": report}
@@ -45,11 +45,7 @@ def build_workflow(vectorstore, clause_extractor, compliance_checker):
 
 
     def extract_json_from_findings(findings_raw) -> dict:
-        """
-        Handles LangChain response format:
-        Either a plain string or a list like [{'type': 'text', 'text': '```json\n{...}```'}]
-        """
-        # If it's a list (LangChain content blocks), extract the text field
+        
         if isinstance(findings_raw, list):
             text = ""
             for block in findings_raw:
@@ -59,7 +55,7 @@ def build_workflow(vectorstore, clause_extractor, compliance_checker):
         else:
             text = findings_raw
 
-        # Strip markdown fences
+        
         clean = re.sub(r"```json|```", "", text).strip()
 
         return json.loads(clean)
@@ -94,7 +90,7 @@ def build_workflow(vectorstore, clause_extractor, compliance_checker):
             print (state["compliance_findings"])
             findings = {}
 
-        # Derive a plain-English recommendation from the score
+        
         if score >= 70:
             recommendation = "REJECT — critical violations require legal review before signing."
         elif score >= 40:
@@ -114,7 +110,7 @@ def build_workflow(vectorstore, clause_extractor, compliance_checker):
         }
         
 
-    # Wire the graph
+   
     graph.add_node("extract", extract_clauses)
     graph.add_node("retrieve", retrieve_policies)
     graph.add_node("check", check_compliance)
