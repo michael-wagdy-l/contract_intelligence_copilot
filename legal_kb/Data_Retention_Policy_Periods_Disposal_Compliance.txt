@@ -1,0 +1,12 @@
+DATA RETENTION POLICY
+
+1. Retention Periods
+Defined per record category.
+
+2. Disposal
+Secure deletion procedures.
+
+3. Compliance
+Alignment with regulations.
+
+Use for records management policies.
