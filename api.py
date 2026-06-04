@@ -20,7 +20,7 @@ async def analyze(file: UploadFile):
     except Exception as e:
         raise HTTPException(status_code=422, detail=f"Could not read file: {str(e)}")
 
-    # Guard against empty extraction
+    
     if not contract_text.strip():
         raise HTTPException(status_code=422, detail="File appears empty or text could not be extracted.")
 
